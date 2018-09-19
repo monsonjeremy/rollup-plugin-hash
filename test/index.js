@@ -188,4 +188,30 @@ describe('rollup-plugin-hash', () => {
 			expect(callback).to.have.been.called.with(`tmp/${results.sha1}`);
 		});
 	});
+
+	it('should reuse an existing manifest file if the reuseManifest option is true', () => {
+		fs.mkdirSync('tmp');
+		fs.writeFileSync('tmp/manifest.json', JSON.stringify({ existing: 'foo' }));
+ 		const res = hashWithOptions({ dest: 'tmp/[hash].js', manifest: 'tmp/manifest.json', reuseManifest: true });
+		return res.then(() => {
+			const manifest = readJson('tmp/manifest.json');
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['tmp/index.js']).to.equal('tmp/' + results.sha1);
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['existing']).to.equal('foo');
+		});
+	});
+
+	it('should not reuse an existing manifest file if the reuseManifest option is false', () => {
+		fs.mkdirSync('tmp');
+		fs.writeFileSync('tmp/manifest.json', JSON.stringify({ existing: 'foo' }));
+ 		const res = hashWithOptions({ dest: 'tmp/[hash].js', manifest: 'tmp/manifest.json' });
+		return res.then(() => {
+			const manifest = readJson('tmp/manifest.json');
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['tmp/index.js']).to.equal('tmp/' + results.sha1);
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['existing']).to.not.exist;
+		});
+	});
 });

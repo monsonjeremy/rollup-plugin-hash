@@ -97,6 +97,18 @@ Required: `false`
 The filename used as the input key in the generated manifest map. 
 Useful in certain build setups where `path.resolve` is needed as `bundle.dest` but not in the manifest.
 
+### reuseManifest
+
+Type: `boolean`
+Default: `false`
+Required: `false`
+
+Determines whether or not to generate a new manifest for each call to `hash()`.
+This option is useful in cases where you want to have multiple bundles created by
+seperate runs of rollup and have them all be accesible by the same manifest.
+
+**This option requires you to delete the manifest yourself when you want to overwrite it**
+
 ### callback
 
 Type: `function`
